@@ -87,7 +87,7 @@ jobs:
 
       - name: Build APK
         run: |
-          flutter build apk --debug --target-platform android-arm64 --split-per-abi --no-tree-shake-icons --android-skip-build-dependency-validation
+          flutter build apk --debug --target-platform android-arm64 --split-per-abi --no-tree-shake-icons --android-skip-build-dependency-validation -vv
 
       - name: Prepare APK release artifacts
         run: |
