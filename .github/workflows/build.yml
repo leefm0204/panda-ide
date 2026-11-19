@@ -87,7 +87,7 @@ jobs:
 
       - name: Build APK
         run: |
-          flutter build apk --debug --target-platform android-arm64 --split-per-abi --no-tree-shake-icons -v
+          flutter build apk --debug --target-platform android-arm64 --split-per-abi --no-tree-shake-icons
 
       - name: Prepare APK release artifacts
         run: |
@@ -100,22 +100,6 @@ jobs:
         with:
           name: panda-ide-apk
           path: build/out/*.apk
-
-      - name: Create GitHub Release
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
-        continue-on-error: true
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: "v2.3.3-build.${{ github.run_number }}"
-          name: "Release v2.3.3 Build ${{ github.run_number }}"
-          body: |
-            Automated build from commit ${{ github.sha }}
-            
-            - Features: Inline agent command approval UI, Autopilot mode, Session permission whitelist
-            - Auto-update sidebar progress tracker
-          draft: false
-          prerelease: false
-          fail_on_unmatched_files: false
           files: build/out/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
