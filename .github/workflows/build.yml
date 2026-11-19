@@ -81,32 +81,19 @@ jobs:
         with:
           channel: 'stable'
           cache: true
-
-      - name: Setup release keystore
-        run: |
-          if [ -n "${{ secrets.KEYSTORE_B64 }}" ] && [ -n "${{ secrets.KEYSTORE_PASSWORD }}" ] && [ -n "${{ secrets.KEY_PASSWORD }}" ] && [ -n "${{ secrets.KEY_ALIAS }}" ]; then
-            echo "Configuring release keystore..."
-            echo "${{ secrets.KEYSTORE_B64 }}" | base64 -d > android/app/panda-ide.keystore
-            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-            echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-            echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-            echo "storeFile=../app/panda-ide.keystore" >> android/key.properties
-            echo "✓ Keystore release configuré avec succès"
-          else
-            echo "⚠️ Secrets de signature manquants. Le build utilisera la signature debug par défaut."
-          fi
+          
       - name: Install dependencies
         run: flutter pub get
 
       - name: Build APK
         run: |
-          flutter build apk --release --target-platform android-arm64 --split-per-abi --no-tree-shake-icons
+          flutter build apk --debug --target-platform android-arm64 --split-per-abi --no-tree-shake-icons -v
 
       - name: Prepare APK release artifacts
         run: |
           mkdir -p build/out
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/out/panda-ide-arm64-release.apk 2>/dev/null || cp build/app/outputs/flutter-apk/app-release.apk build/out/panda-ide-release.apk
-          cp build/app/outputs/flutter-apk/app-release.apk build/out/panda-ide-universal-release.apk 2>/dev/null || true
+          cp build/app/outputs/flutter-apk/*.apk build/out/panda-ide-arm64-debug.apk 2>/dev/null || cp build/app/outputs/flutter-apk/*.apk build/out/panda-ide-*.apk
+          cp build/app/outputs/flutter-apk/*.apk build/out/panda-ide-universal-debug.apk 2>/dev/null || true
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v7
